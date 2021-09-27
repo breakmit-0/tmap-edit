@@ -1,6 +1,6 @@
 libs = -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi
 src = editor.cpp
-out = a.exe
+out = build/a.exe
 
 
 main:
