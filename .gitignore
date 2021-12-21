@@ -32,4 +32,13 @@
 *.app
 
 #.vscode sutff
-.vscode/*
+.vscode/empty
+.vscode/c_cpp_properties.json
+.vscode/settings.json
+
+# batch shortcuts
+*.cmd
+*.bat
+
+# Makefile
+Makefile

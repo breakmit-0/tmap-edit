@@ -1,3 +1,4 @@
+#pragma GCC system_header
 #pragma region license_and_help
 /*
 	olcPixelGameEngine.h
@@ -1049,6 +1050,7 @@ namespace olc
 
 	public: // Branding
 		std::string sAppName;
+		std::string sEditedFile;
 
 	private: // Inner mysterious workings
 		olc::Sprite*     pDrawTarget = nullptr;
@@ -3037,7 +3039,7 @@ namespace olc
 		{
 			nLastFPS = nFrameCount;
 			fFrameTimer -= 1.0f;
-			std::string sTitle = "OneLoneCoder.com - Pixel Game Engine - " + sAppName + " - FPS: " + std::to_string(nFrameCount);
+			std::string sTitle = sAppName + " - " + sEditedFile + " - FPS: " + std::to_string(nFrameCount);
 			platform->SetWindowTitle(sTitle);
 			nFrameCount = 0;
 		}

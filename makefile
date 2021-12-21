@@ -1,7 +1,8 @@
 libs = -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi
-src = editor.cpp
-out = build/a.exe
+options = -Werror -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter
+src = main.cpp 
+out = .build/a.exe
 
 
 main:
-	g++ -o $(out) $(src) $(libs)  -lstdc++fs -static -std=c++17 -Werror
+	g++ -o $(out) $(src) $(libs) $(options) -mwindows -lstdc++fs -static -std=c++17
