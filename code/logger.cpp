@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#define LOG_FILE "app.log"
-
 /*
 fstream interface that autocloses on write
 */
@@ -11,12 +9,11 @@ namespace std {
     const lfstream_flush FLUSH;
     
     class lfstream {
+    public:
         std::ofstream stream;
-        public:
 
-        lfstream(const char* name)
-        {
-            stream = std::ofstream(name);
+        lfstream() {
+            stream = std::ofstream();
         }
 
         template<class T>
@@ -35,4 +32,4 @@ namespace std {
     };
 };
 
-std::lfstream log_console(LOG_FILE);
+std::lfstream log_console;

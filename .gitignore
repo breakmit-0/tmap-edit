@@ -30,15 +30,9 @@
 *.exe
 *.out
 *.app
-
-#.vscode sutff
-.vscode/empty
-.vscode/c_cpp_properties.json
-.vscode/settings.json
+.build
+.vscode
 
 # batch shortcuts
 *.cmd
 *.bat
-
-# Makefile
-Makefile

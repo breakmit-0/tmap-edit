@@ -2,7 +2,7 @@
 
 
 #ifdef IDEPLS
-#include "main.cpp"
+#include "../main.cpp"
 #endif
 
 
@@ -37,7 +37,7 @@ olc::Pixel paletteBlend(const int _x, const int _y, const olc::Pixel& src, const
     if ((src.r & 0x0F) == 0x00) return {0, 0, 0};
 
     //else
-    olc::Pixel* pal = state::palette->getPalette(blend::pal & 0x0F);
+    olc::Pixel* pal = state::palette->getPalette(blend::pal & 0x07);
     olc::Pixel res = pal[src.r & 0x0F];
 
     //apply priority overlay

@@ -41,28 +41,24 @@ namespace snes {
 
 struct snes::palette
 {
-    olc::Pixel data[0x100];
+    olc::Pixel data[128];
 
     //simple hi/lo byte 2d access
     olc::Pixel& operator[](int idx) {
         return data[idx];
     }
 
-    //load from file
+    //load from file (8-8-8 RGB)
     void load_pal(std::string name) {
         FILE* file = std::fopen(name.c_str(), "rb");
-        char* raw = (char*)malloc(3*256);
-        std::fread(raw, 3, 256, file);
+        char* raw = (char*)malloc(3*128);
+        std::fread(raw, 3, 128, file);
         std::fclose(file);
 
-        for (int i=0; i<256; i++) {
+        for (int i=0; i<128; i++) {
             data[i] = olc::Pixel(raw[3*i], raw[3*i+1], raw[3*i+2], 0xFF);
         }
     }
-
-    /*void load_spl(std::string name) {
-        /to implement/
-    }*/
 
     //get one of the 16 color palettes
     olc::Pixel* getPalette(int idx) {

@@ -1,10 +1,16 @@
+//replace with VK_OEM_3 for qwerty
+#define VVK_BEFORE_1 VK_OEM_7
+#define NEW_BACKUP_FILE "backup_new.tmap"
+#define LOG_FILE "app.log"
+#define ICON_NAME "icon.ico"
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
-//replace with VK_OEM_3 for qwerty
-#define VVK_BEFORE_1 VK_OEM_7
-#define NEW_BACKUP_FILE "./backup_new.tmp"
 
+
+/* if vscode works this file is included first
+ * else, all other files have IDEPLS and inclde main
+*/
 #undef IDEPLS
 
 //std includes
@@ -29,12 +35,36 @@ struct window : public olc::PixelGameEngine {
 #include "proc/action.cpp"
 
 //entry point
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
+    state::argc = argc;
+    state::argv = argv;
 
-    //init stuff
-    log_console << "\n--APP START--\n";
+    //get file deirectory
+    char path_tmp[MAX_PATH];
+    GetModuleFileNameA(NULL, path_tmp, MAX_PATH);
+    state::EXE_DIR = std::string(path_tmp);
+    while(state::EXE_DIR.back() != '/' && state::EXE_DIR.back() != '\\') {
+        state::EXE_DIR.pop_back();
+        if (state::EXE_DIR.length() <= 0) {
+            log_console << "[ERROR] <> app stared from an invalid loaction ?! : " << path_tmp;
+            return 0;
+        }
+    }
+
+    //setup logger
+    log_console.stream.open(state::EXE_DIR+std::string(LOG_FILE), std::ios::trunc);
+    
+    //initialize constants
     cst::init_maps();
+
+    //start with new file
     *state::editedFile = '\0';
+
+    //startup meesage
+    log_console << "\n--APP START--\n";
+    log_console << "[INFO] <> executing from : " << state::EXE_DIR << "\n";
+
 
     window win;
     if (win.Construct(
@@ -46,6 +76,10 @@ int main(int argc, char** argv) {
         false  //cohesion
     )) 
     {win.Start();}
+    
+    else {
+        log_console << "startup error!!";
+    }
 
     return 0;
 }
@@ -58,6 +92,7 @@ bool window::OnUserCreate()
     state::palette = new snes::palette();
     state::currentMap = new snes::tilemap();
     state::clipboard = new snes::tiles({0, 0});
+    state::pack = new olc::ResourcePack();
     state::selectedPalette = 0;
     state::selMode = mode::none;
     state::selBox = {{0,0},{0,0}};
@@ -83,35 +118,36 @@ bool window::OnUserCreate()
     DrawRect({pad::left+32*8+pad::center-1, pad::top-1}, {16*8+1, 32*8+1}, cst::BorderColor);
 
     //load the UI sprites
-    state::buttonMap[butt::sprite::open]        = olc::Sprite("./assets/open.png");
-    state::buttonMap[butt::sprite::newfile]     = olc::Sprite("./assets/new.png");
-    state::buttonMap[butt::sprite::save]        = olc::Sprite("./assets/save.png");
-    state::buttonMap[butt::sprite::saveas]      = olc::Sprite("./assets/saveas.png");
-    state::buttonMap[butt::sprite::config]      = olc::Sprite("./assets/config.png");
-    state::buttonMap[butt::sprite::fliph]       = olc::Sprite("./assets/flip_h.png");
-    state::buttonMap[butt::sprite::flipv]       = olc::Sprite("./assets/flip_v.png");
-    state::buttonMap[butt::sprite::page_down]   = olc::Sprite("./assets/page_down.png");
-    state::buttonMap[butt::sprite::page_up]     = olc::Sprite("./assets/page_up.png");
-    state::buttonMap[butt::sprite::fill1]       = olc::Sprite("./assets/filler1.png");
-    state::buttonMap[butt::sprite::fill2]       = olc::Sprite("./assets/filler2.png");
-    state::buttonMap[butt::sprite::empty]       = olc::Sprite("./assets/empty.png");
-    state::buttonMap[butt::sprite::copy]        = olc::Sprite("./assets/copy.png");
-    state::buttonMap[butt::sprite::paste]       = olc::Sprite("./assets/paste.png");
-    state::buttonMap[butt::sprite::cut]         = olc::Sprite("./assets/cut.png");
-    state::buttonMap[butt::sprite::prio]        = olc::Sprite("./assets/prio.png");
-    state::buttonMap[butt::sprite::prio2]       = olc::Sprite("./assets/prio2.png");
-    state::buttonMap[butt::sprite::tile0]       = olc::Sprite("./assets/tile0.png");
-    state::buttonMap[butt::sprite::palmap]      = olc::Sprite("./assets/palselect.png");
-    state::buttonMap[butt::sprite::gfx0]        = olc::Sprite("./assets/load0.png");
-    state::buttonMap[butt::sprite::gfx1]        = olc::Sprite("./assets/load1.png");
-    state::buttonMap[butt::sprite::gfx2]        = olc::Sprite("./assets/load2.png");
-    state::buttonMap[butt::sprite::gfx3]        = olc::Sprite("./assets/load3.png");
-    state::buttonMap[butt::sprite::pal]         = olc::Sprite("./assets/loadpal.png");
-    state::buttonMap[butt::sprite::prio_show]   = olc::Sprite("./assets/prio_show.png");
-    state::buttonMap[butt::sprite::prio_noshow] = olc::Sprite("./assets/prio_noshow.png");
-    state::spriteMap[sprite::selbox]            = olc::Sprite("./assets/selbox.png");
-    state::spriteMap[sprite::hover]             = olc::Sprite("./assets/hover.png");
-    state::spriteMap[sprite::effect8x]          = olc::Sprite("./assets/effect8x.png");
+    state::pack->LoadPack(state::EXE_DIR+"assets.pck", "assets-v1.0");
+    state::buttonMap[butt::sprite::open]        = olc::Sprite("./open.png", state::pack);
+    state::buttonMap[butt::sprite::newfile]     = olc::Sprite("./new.png", state::pack);
+    state::buttonMap[butt::sprite::save]        = olc::Sprite("./save.png", state::pack);
+    state::buttonMap[butt::sprite::saveas]      = olc::Sprite("./saveas.png", state::pack);
+    state::buttonMap[butt::sprite::config]      = olc::Sprite("./config.png", state::pack);
+    state::buttonMap[butt::sprite::fliph]       = olc::Sprite("./flip_h.png", state::pack);
+    state::buttonMap[butt::sprite::flipv]       = olc::Sprite("./flip_v.png", state::pack);
+    state::buttonMap[butt::sprite::page_down]   = olc::Sprite("./page_down.png", state::pack);
+    state::buttonMap[butt::sprite::page_up]     = olc::Sprite("./page_up.png", state::pack);
+    state::buttonMap[butt::sprite::fill1]       = olc::Sprite("./filler1.png", state::pack);
+    state::buttonMap[butt::sprite::fill2]       = olc::Sprite("./filler2.png", state::pack);
+    state::buttonMap[butt::sprite::empty]       = olc::Sprite("./empty.png", state::pack);
+    state::buttonMap[butt::sprite::copy]        = olc::Sprite("./copy.png", state::pack);
+    state::buttonMap[butt::sprite::paste]       = olc::Sprite("./paste.png", state::pack);
+    state::buttonMap[butt::sprite::cut]         = olc::Sprite("./cut.png", state::pack);
+    state::buttonMap[butt::sprite::prio]        = olc::Sprite("./prio.png", state::pack);
+    state::buttonMap[butt::sprite::prio2]       = olc::Sprite("./prio2.png", state::pack);
+    state::buttonMap[butt::sprite::tile0]       = olc::Sprite("./tile0.png", state::pack);
+    state::buttonMap[butt::sprite::palmap]      = olc::Sprite("./palselect.png", state::pack);
+    state::buttonMap[butt::sprite::gfx0]        = olc::Sprite("./load0.png", state::pack);
+    state::buttonMap[butt::sprite::gfx1]        = olc::Sprite("./load1.png", state::pack);
+    state::buttonMap[butt::sprite::gfx2]        = olc::Sprite("./load2.png", state::pack);
+    state::buttonMap[butt::sprite::gfx3]        = olc::Sprite("./load3.png", state::pack);
+    state::buttonMap[butt::sprite::pal]         = olc::Sprite("./loadpal.png", state::pack);
+    state::buttonMap[butt::sprite::prio_show]   = olc::Sprite("./prio_show.png", state::pack);
+    state::buttonMap[butt::sprite::prio_noshow] = olc::Sprite("./prio_noshow.png", state::pack);
+    state::spriteMap[sprite::selbox]            = olc::Sprite("./selbox.png", state::pack);
+    state::spriteMap[sprite::hover]             = olc::Sprite("./hover.png", state::pack);
+    state::spriteMap[sprite::effect8x]          = olc::Sprite("./effect8x.png", state::pack);
 
     //display toolbar buttons
     DrawSprite(olc::vi2d(pad::left+0*16,0), &state::buttonMap[butt::sprite::newfile]);
@@ -145,21 +181,42 @@ bool window::OnUserCreate()
     DrawSprite(olc::vi2d(pad::left+32*8+pad::center+0*16,16), &state::buttonMap[butt::sprite::fill2]);
 
 
-    //TEST: load some palette
-    state::palette->load_pal("data/2.pal");
-    state::selectedPalette = 0xA;
+    //load the default palette
+    state::palette->load_pal(state::EXE_DIR+"default.pal");
+    state::selectedPalette = 0x00;
 
-    //TEST: load some gfx
-    state::tileData->load("data/1.bin", 0x000);
-    state::tileData->load("data/2.bin", 0x200);    
-    
-    //TEST: init the tilemap to some image
-    for (int x=0; x<32; x++)
-    for (int y=0; y<32; y++) {
-        state::currentMap->get({x, y}) = {0xa4, snes::axis::oo, 0, 0};
+    //load a tilemap if an argument is provided
+    if (state::argc >= 2)
+    {
+        FILE* file = std::fopen(state::argv[1], "rb");
+        uint8_t* raw = (uint8_t*)malloc(2*32*32);
+        std::fread(raw, 1, 2*32*32, file);
+        std::fclose(file);
+
+        uint8_t lo, hi;
+
+        std::strcpy(state::editedFile, state::argv[1]);
+        state::isSaved = true;
+
+        log_console << "[INFO] <> opening 'open with' tilemap: " << state::argv[1] << "\n";
+
+        for (int y=0; y<32; y++)
+        for (int x=0; x<32; x++)
+        {
+            int idx = pos2idx(state::currentMap->sx)({x,y});
+            lo = raw[2*idx];
+            hi = raw[2*idx+1];
+
+            snes::tile t;
+                t.id = lo + ((hi & 0b00000011) << 8);
+                t.palette = ((hi & 0b00011100) >> 2);
+                t.prio =    ((hi & 0b00100000) >> 5);
+                t.flip =    ((hi & 0b11000000) >> 6);
+
+            state::currentMap->get({x,y}) = t;
+        }
+        free(raw);
     }
-
-
 
     //draw default bank/map
     UpdateBankGFX(this);
@@ -174,6 +231,7 @@ bool window::OnUserDestroy() {
     delete state::palette;
     delete state::currentMap;
     delete state::clipboard;
+    delete state::pack;
     return true;
 };
 
@@ -363,6 +421,12 @@ bool window::OnUserUpdate(float delta)
             case butt::main::empty: break;
             default: break;              
             }
+        }
+
+        if (is_in({mx,my}, bound::loadpal))
+        {
+            state::doGFXupdate = true;
+            act::openpal(this);
         }
 
         if (is_in({mx,my}, bound::pal))

@@ -2,7 +2,7 @@
 
 
 #ifdef IDEPLS
-#include "main.cpp"
+#include "../main.cpp"
 #endif
 
 /*
@@ -51,8 +51,8 @@ namespace act {
 /***************************************************************************************/
 
 
-
-void saveMap(char* fn)
+template<class T>
+void saveMap(T fn)
 {
     FILE* file = std::fopen(fn, "wb");
     uint8_t* raw = (uint8_t*)malloc(2*state::currentMap->sx*state::currentMap->sy);
@@ -95,6 +95,20 @@ void act::config(window* win)
 {
 
 }
+
+/***************************************************************************************/
+
+
+void act::openpal(window* win)
+{
+    char fn[MAX_PATH];
+    getOpenFile(fn, "Open File", "Palette Files (*.pal)\0*.pal\0All Files (*.*)\0*.*\0");
+    if (fn[0] == '\0') {return;}
+
+    state::palette->load_pal(std::string(fn));
+    UpdateBankGFX(win);
+}
+
 
 
 
@@ -158,7 +172,7 @@ void act::newfile(window* win)
         state::currentMap->get({x,y}).id = -1;
     }
 
-    saveMap(NEW_BACKUP_FILE);
+    saveMap<const char*>((state::EXE_DIR+NEW_BACKUP_FILE).c_str());
 
     *state::editedFile = '\0';
     state::isSaved = false;
@@ -365,7 +379,7 @@ void act::paste(window* win)
 void act::open(window* win)
 {
     char fn[MAX_PATH];
-    getOpenFile(fn, "Open File", "Tilemap Files (*.tmp;*.bin)\0*.tmp;*.bin\0All Files (*.*)\0*.*\0");
+    getOpenFile(fn, "Open File", "Tilemap Files (*.tmap;*.bin)\0*.tmap;*.bin\0All Files (*.*)\0*.*\0");
     if (fn[0] == '\0') {return;}
 
     FILE* file = std::fopen(fn, "rb");
@@ -406,13 +420,13 @@ void act::open(window* win)
 void act::saveas(window* win)
 {
     char fn[MAX_PATH];
-    getSaveFile(fn, "Save As", "Tilemap Files (*.tmp;*.bin)\0*.tmp;*.bin\0All Files (*.*)\0*.*\0");
+    getSaveFile(fn, "Save As", "Tilemap Files (*.tmap;*.bin)\0*.tmap;*.bin\0All Files (*.*)\0*.*\0");
     if (fn[0] == '\0') {return;}
 
     strcpy(state::editedFile, fn);
     state::isSaved = true;
     log_console << "[INFO] <> saving tilemap to <" << fn << ">\n";
-    saveMap(fn);
+    saveMap<char*>(fn);
 }
 
 
@@ -427,7 +441,8 @@ void act::openGFX(window* win, int slot)
     slot *= 0x80;
 
     char fn[MAX_PATH];
-    getOpenFile(fn, "Save As", "Tilemap Files (*.tmp;*.bin)\0*.tmp;*.bin\0All Files (*.*)\0*.*\0");
+    getOpenFile(fn, "Save As", "Graphics Files (*.gfx;*.bin)\0*.gfx;*.bin\0All Files (*.*)\0*.*\0");
+    if (fn[0] == '\0') {return;}
 
     state::tileData->load(std::string(fn), slot);
         UpdateBankGFX(win);
@@ -468,7 +483,7 @@ void act::save(window* win)
     }
 
     state::isSaved = true;
-    saveMap(state::editedFile);
+    saveMap<char*>(state::editedFile);
     log_console << "[INFO] <> saving tilemap to <" << state::editedFile << ">\n";
 }
 

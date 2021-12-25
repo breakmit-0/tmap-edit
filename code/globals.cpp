@@ -49,7 +49,18 @@ namespace state
     //show priority tiles switch
     bool showPrioToggle = false;
 
+    //update gfx this frame
     bool doGFXupdate = true;
+
+    //path to the folder of this executable
+    std::string EXE_DIR;
+
+    //assets
+    olc::ResourcePack* pack;
+
+    //global state copies
+    int argc;
+    char** argv;
 };
 
 //extra blending arguments
@@ -104,14 +115,14 @@ namespace cst
         altmap[{5,0}] = butt::alt::empty;
         altmap[{6,0}] = butt::alt::tile0;
         altmap[{7,0}] = butt::alt::showprio;
-        altmap[{0,0}] = butt::alt::empty;
         altmap[{0,1}] = butt::alt::empty;
-        altmap[{0,2}] = butt::alt::empty;
-        altmap[{0,3}] = butt::alt::empty;
-        altmap[{0,4}] = butt::alt::empty;
-        altmap[{0,5}] = butt::alt::empty;
-        altmap[{0,6}] = butt::alt::empty;
-        altmap[{0,7}] = butt::alt::empty;
+        altmap[{1,1}] = butt::alt::empty;
+        altmap[{2,1}] = butt::alt::empty;
+        altmap[{3,1}] = butt::alt::empty;
+        altmap[{4,1}] = butt::alt::empty;
+        altmap[{5,1}] = butt::alt::empty;
+        altmap[{6,1}] = butt::alt::empty;
+        altmap[{7,1}] = butt::alt::empty;
 
     }
 
@@ -123,7 +134,7 @@ namespace bound
     
     int pal[4] =      {pad::left+8*16, 0, pad::left+16*16, 16};
     int mainbar[4] =  {pad::left, 0, pad::left+8*16, 32};
-    int loadpal[4] =  {pad::left+31*8, 16, pad::left+32*8, 32};
+    int loadpal[4] =  {pad::left+15*16, 16, pad::left+16*16, 32};
 
     int mainarea[4] = {pad::left, 0, pad::left+16*16, 32};
     int fill1[4] = {pad::left+4*16, 16, pad::left+15*16, 32};
