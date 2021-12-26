@@ -1,6 +1,6 @@
 p_libs = -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi
 p_options = -Werror -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter
-p_src = code/main.cpp
+p_src = code/main.cpp .build/icon.res
 p_out = .build/tmap-edit.exe
 
 a_options = $(p_options)
@@ -16,7 +16,9 @@ all:
 	touch .build/app.log
 
 make_program:
+	windres assets/icon/app.rc -O coff -o .build/icon.res
 	g++ -o $(p_out) $(p_src) $(p_libs) $(p_options) -mwindows -lstdc++fs -static -std=c++17
+	rm .build/icon.res
 
 make_assets:
 	cd ./assets; \

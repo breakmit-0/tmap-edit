@@ -4357,16 +4357,9 @@ namespace olc
 
 		virtual olc::rcode CreateWindowPane(const olc::vi2d& vWindowPos, olc::vi2d& vWindowSize, bool bFullScreen) override
 		{
-			//find the executable folder
-			char exe_dir[MAX_PATH];
-    		GetModuleFileNameA(NULL, exe_dir, MAX_PATH);
-    		std::string exe_str = std::string(exe_dir);
-    		while(exe_str.back() != '/' && exe_str.back() != '\\') {
-        		exe_str.pop_back();
-			}
 
 			WNDCLASS wc;
-			wc.hIcon = (HICON)LoadImage(NULL, (exe_str+ICON_NAME).c_str(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+			wc.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(0));
 			wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 			wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 			wc.hInstance = GetModuleHandle(nullptr);
