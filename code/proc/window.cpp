@@ -1,4 +1,4 @@
-#include "../olcPixelgameEngine.h"
+#include "../olcPixelGameEngine.h"
 
 
 #ifdef IDEPLS

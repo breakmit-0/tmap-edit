@@ -1,9 +1,18 @@
+#define WINVER 0x0400
+#define __WIN95__
+#define __GNUWIN32__
+#define STRICT
+#define HAVE_W32API_H
+#define __WXMSW__
+#define __WINDOWS__
+
+
+
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
 #include <iostream>
 #include <conio.h>
-
 #define addF(file) if (!pack->AddFile(file)) {std::cout << "PACK.EXE ERROR : file <" << file << "> does not exist, could not add it to the ressourcepack, continue?\n"; if (getch() == 'n') {std::cout << "pack.dat was not modified\n"; return 0;}}
 
 int main() {
